@@ -25,6 +25,7 @@ class FSMAdmin(StatesGroup):
 async def make_changes_command(message: types.Message):
     global ID
     ID = message.from_user.id
+    print(ID)
     await bot.send_message(message.from_user.id, 'Что хозяин надо???', reply_markup=admin_kb.button_case_admin)
     await message.delete()
 
@@ -32,6 +33,7 @@ async def make_changes_command(message: types.Message):
 # Начало диалога загрузки нового пункта меню
 # @dp.message_handler(commands='Загрузить', state=None)
 async def cm_start(message: types.Message):
+    print(message.from_user.id)
     if message.from_user.id == ID:
         await FSMAdmin.photo.set()
         await message.reply('Загрузи фото')
@@ -110,7 +112,7 @@ async def delete_item(message: types.Message):
 def register_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(cm_start, commands=['Загрузить'], state=None)
     dp.register_message_handler(cansel_handler, Text(equals='отмена', ignore_case=True), state='*')
-    dp.register_message_handler(make_changes_command, commands=['moderator'], is_chat_admin=True)
+    dp.register_message_handler(make_changes_command, commands=['moderator'])
     dp.register_message_handler(load_photo, content_types=['photo'], state=FSMAdmin.photo)
     dp.register_message_handler(load_name, state=FSMAdmin.name)
     dp.register_message_handler(load_description, state=FSMAdmin.description)
