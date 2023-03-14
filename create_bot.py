@@ -7,6 +7,6 @@ import os
 
 #запускаем классы
 storage = MemoryStorage()
-token = "5667116084:AAHMgxObAIvevrGs9NarpYqWUg9kCPSm3MU"
+token = ""
 bot = Bot(token)
 dp = Dispatcher(bot, storage=storage)
