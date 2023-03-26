@@ -9,6 +9,8 @@ def sql_start():
     if base:
         print('Data base connected OK!')
     base.execute('CREATE TABLE IF NOT EXISTS menu(img TEXT, name TEXT PRIMARY KEY, description TEXT, price TEXT)')
+    base.execute(
+        'CREATE TABLE IF NOT EXISTS orders(name TEXT, pizza_name TEXT, pizza_size TEXT, address TEXT, phone TEXT)')
     base.commit()
 
 
@@ -20,8 +22,18 @@ async def sql_add_command(state):
 
 async def sql_read(message):
     for ret in cur.execute('SELECT * FROM menu').fetchall():
-        print(ret)
-        await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nЦена {ret[-1]}')
+        start_price = int(float(ret[-1]))
+        prices = {25: start_price, 30: start_price + 5, 35: start_price + 10, 40: start_price + 15}
+
+        await bot.send_photo(message.from_user.id, ret[0], f'{ret[1]}\nОписание: {ret[2]}\nЦены:\n'
+                                                           f'Маленькая: {prices[25]}\nСредняя: {prices[30]}\nБольшая: {prices[35]}\nКоролевская: {prices[40]}')
+
+
+async def sql_read3(message):
+    orders = cur.execute('SELECT * FROM orders').fetchall()
+    for order in orders:
+        await bot.send_message(message.from_user.id,
+                               f"Имя клиента {order[0]} Pizza name {order[1]} size {order[2]} address {order[3]} phone {order[4]} ")
 
 
 async def sql_read2():
@@ -31,3 +43,9 @@ async def sql_read2():
 async def sql_delete_command(data):
     cur.execute('DELETE FROM menu WHERE name == ?', (data,))
     base.commit()
+
+
+async def sql_add_order(state):
+    async with state.proxy() as data:  # открываем наш словарь
+        cur.execute('INSERT INTO orders VALUES (?, ?, ?, ?, ?)', tuple(data.values()))
+        base.commit()

@@ -25,9 +25,13 @@ class FSMAdmin(StatesGroup):
 async def make_changes_command(message: types.Message):
     global ID
     ID = message.from_user.id
-    print(ID)
     await bot.send_message(message.from_user.id, 'Что хозяин надо???', reply_markup=admin_kb.button_case_admin)
     await message.delete()
+
+
+async def read_orders(message: types.Message):
+    await bot.send_message(message.from_user.id, 'Вот заказы пиццерии')
+    await sqlite_db.sql_read3(message)
 
 
 # Начало диалога загрузки нового пункта меню
@@ -83,12 +87,14 @@ async def load_description(message: types.Message, state: FSMContext):
 
 
 # Ловим четвертый ответ и используем полученные данные
-# @dp.message_handler(state=FSMAdmin.price)
 async def load_price(message: types.Message, state: FSMContext):
     if message.from_user.id == ID:
+        priсe = float(message.text)
         async with state.proxy() as data:
-            data['price'] = float(message.text)
+            data['price'] = priсe
+
         await sqlite_db.sql_add_command(state)
+
         await state.finish()  # команда завершает машино-состояние и все данные что мы получили выши нужно обработать
 
 
@@ -113,6 +119,7 @@ def register_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(cm_start, commands=['Загрузить'], state=None)
     dp.register_message_handler(cansel_handler, Text(equals='отмена', ignore_case=True), state='*')
     dp.register_message_handler(make_changes_command, commands=['moderator'])
+    dp.register_message_handler(read_orders, commands=['Просмотреть_заказы'])
     dp.register_message_handler(load_photo, content_types=['photo'], state=FSMAdmin.photo)
     dp.register_message_handler(load_name, state=FSMAdmin.name)
     dp.register_message_handler(load_description, state=FSMAdmin.description)
