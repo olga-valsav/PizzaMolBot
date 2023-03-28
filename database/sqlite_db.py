@@ -33,7 +33,7 @@ async def sql_read3(message):
     orders = cur.execute('SELECT * FROM orders').fetchall()
     for order in orders:
         await bot.send_message(message.from_user.id,
-                               f"Имя клиента {order[0]} Pizza name {order[1]} size {order[2]} address {order[3]} phone {order[4]} ")
+                               f"Name {order[0]}\nPizza name {order[1]}\nsize {order[2]}\naddress {order[3]}\nphone {order[4]} ")
 
 
 async def sql_read2():

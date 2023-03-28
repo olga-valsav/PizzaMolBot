@@ -21,7 +21,7 @@ async def command_start(message: types.Message, state: FSMContext):
     try:
         await state.finish()
         await bot.send_message(message.from_user.id,
-                               'Приятного аппетита. Для перезагрузки воспользуйся /start',
+                               'Добро пожаловать! Хотите сделать заказ?',
                                reply_markup=kb_client)
 
     except:
@@ -42,7 +42,7 @@ async def wait_client_name(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['name'] = message.text
     await FSMClient.next()
-    await message.reply('Введи название пиццы')
+    await message.reply('Введите название пиццы')
 
 
 async def wait_pizza_name(message: types.Message, state: FSMContext):
@@ -56,14 +56,14 @@ async def wait_pizza_size(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['pizza_size'] = message.text
     await FSMClient.next()
-    await message.reply("Напиши свой адрес")
+    await message.reply("Напишите свой адрес")
 
 
 async def wait_client_address(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['client_address'] = message.text
     await FSMClient.next()
-    await message.reply("Напиши свой телефон")
+    await message.reply("Напишите свой телефон")
 
 
 async def wait_client_phone(message: types.Message, state: FSMContext):
@@ -72,7 +72,7 @@ async def wait_client_phone(message: types.Message, state: FSMContext):
 
     await sqlite_db.sql_add_order(state)
     await state.finish()  # команда завершает машино-состояние и все данные что мы получили выши нужно обработать
-    await message.reply("Спасибо за заказ оператор свяжеться в ближ время!", reply_markup=kb_client)
+    await message.reply("Спасибо за заказ, оператор свяжется с Вами в ближайшее время!", reply_markup=kb_client)
 
 
 async def cansel_handler(message: types.Message, state: FSMContext):
